@@ -24,9 +24,23 @@ void SimpleShapeApplication::init() {
     }
 
     std::vector<GLfloat> vertices = {
-            -0.5f, 0.0f, 0.0f,
-            0.5f, 0.0f, 0.0f,
-            0.0f, 0.5f, 0.0f
+            // to są po prostu współrzędne wierzchołków: x,y, z
+            // jeśli którąś zmienimy to zmienimy kształt, możemy też przesunąć wszystkie o ten sam wektor i wówczas cały trójkąt się przesunie
+
+            -0.5f, 0.5f, 0.0f, 0.80f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.0f, 0.80f, 0.0f, 0.0f,
+            0.0f, 0.9f, 0.0f,  0.80f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.0f, 0.3f, 0.64f, 0.0f,
+            -0.5f, -0.5f, 0.0f, 0.3f, 0.64f, 0.0f,
+            0.5f, -0.5f, 0.0f,  0.3f, 0.64f, 0.0f,
+            0.5f, -0.5f, 0.0f, 0.3f, 0.64f, 0.0f,
+            0.5f, 0.5f, 0.0f, 0.3f, 0.64f, 0.0f,
+            -0.5f, 0.5f, 0.0f, 0.3f, 0.64f, 0.0f,
+
+
+            // jeśli któraś współrzędna wykroczy poza zakres <-1,1> to nie będziemy widzieli całego trójkąta
+            //zmiana współrzędnej z niczego nie zmienia (chyba że wykroczymy poza zakres <-1,1>, wówczas "obetnie" nam kawałek trójkąta
+
     };
 
     GLuint v_buffer_handle;
@@ -40,8 +54,10 @@ void SimpleShapeApplication::init() {
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3*sizeof(GLfloat)));
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
 
@@ -52,10 +68,12 @@ void SimpleShapeApplication::init() {
 
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
+
+
 }
 
 void SimpleShapeApplication::frame() {
     glBindVertexArray(vao_);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 9);
     glBindVertexArray(0);
 }
