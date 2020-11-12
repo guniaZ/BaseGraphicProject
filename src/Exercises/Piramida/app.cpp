@@ -34,16 +34,16 @@ void SimpleShapeApplication::init() {
             // jeśli którąś zmienimy to zmienimy kształt, możemy też przesunąć wszystkie o ten sam wektor i wówczas cały trójkąt się przesunie
 
             //"podstawa" piramidy"
-            -0.5, -0.5, 0.0, 0.5, 0.5, 0.5,//0
-            -0.5, 0.5, 0.0, 0.5, 0.5, 0.5, //1
-             0.5, -0.5, 0.0, 0.5, 0.5, 0.5, //2
-             0.5, 0.5, 0.0, 0.5, 0.5, 0.5, //3
+            -0.5, -0.5, 0.0, 0.5, 0.1, 0.5,//0
+            -0.5, 0.5, 0.0, 0.5, 0.1, 0.5, //1
+             0.5, -0.5, 0.0, 0.5, 0.1, 0.5, //2
+             0.5, 0.5, 0.0, 0.5, 0.1, 0.5, //3
 
              // i ściany:
              //1
-            0.5, 0.5, 0.0, 1.0, 0.0, 0.0, //3
-            0.0, 0.0, 1.0, 1.0, 0.0, 0.0, //
-            0.5, -0.5, 0.0, 1.0, 0.0, 0.0, //2
+            0.5, 0.5, 0.0, 0.9, 0.5, 0.0, //3
+            0.0, 0.0, 1.0, 0.9, 0.5, 0.0, //
+            0.5, -0.5, 0.0, 0.9, 0.5, 0.0, //2
 
             //2
             -0.5, 0.5, 0.0, 0.0, 1.0, 0.0, //
@@ -51,14 +51,14 @@ void SimpleShapeApplication::init() {
             0.5, -0.5, 0.0, 0.0, 1.0, 0.0, //
 
             //3
-            -0.5, -0.5, 0.0, 0.0, 0.0, 1.0, //
-            0.0, 0.0, 1.0, 0.0, 0.0, 1.0, //
-            -0.5, 0.5, 0.0, 0.0, 0.0, 1.0, //
+            -0.5, -0.5, 0.0, 0.0, 0.2, 0.8, //
+            0.0, 0.0, 1.0, 0.0, 0.2, 0.8, //
+            -0.5, 0.5, 0.0, 0.0, 0.2, 0.8, //
 
             //4
-            -0.5, 0.5, 0.0, 1.0, 0.0, 1.0, //1
-            0.0, 0.0, 1.0, 1.0, 0.0, 1.0, //
-            0.5, 0.5, 0.0, 1.0, 0.0, 1.0, //3
+            -0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //1
+            0.0, 0.0, 1.0, 0.3, 0.0, 0.6, //
+            0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //3
 
             // jeśli któraś współrzędna wykroczy poza zakres <-1,1> to nie będziemy widzieli całego trójkąta
             //zmiana współrzędnej z niczego nie zmienia (chyba że wykroczymy poza zakres <-1,1>, wówczas "obetnie" nam kawałek trójkąta
@@ -126,7 +126,7 @@ void SimpleShapeApplication::init() {
 
     int w, h;
     std::tie(w, h) = frame_buffer_size();
-    auto V = glm::lookAt(glm::vec3{0.5,2.8,1.5},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
+    auto V = glm::lookAt(glm::vec3{0.9,2.8,1.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
     auto P = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
     //glm::mat4 M(1.0f);
     auto  PVM = P * V;
