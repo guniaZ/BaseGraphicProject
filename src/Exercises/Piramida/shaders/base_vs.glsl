@@ -6,7 +6,8 @@ layout(location=1) in vec4 a_vertex_color;
 layout(std140)  uniform Transformations {
 //    mat4 P;
 //    mat4 V;
-    mat4 PVM;
+      mat4 PVM;
+
 };
 
 out vec4 vertex_color;

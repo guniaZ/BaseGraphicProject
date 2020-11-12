@@ -33,18 +33,32 @@ void SimpleShapeApplication::init() {
             // to są po prostu współrzędne wierzchołków: x,y, z
             // jeśli którąś zmienimy to zmienimy kształt, możemy też przesunąć wszystkie o ten sam wektor i wówczas cały trójkąt się przesunie
 
+            //"podstawa" piramidy"
+            -0.5, -0.5, 0.0, 0.5, 0.5, 0.5,//0
+            -0.5, 0.5, 0.0, 0.5, 0.5, 0.5, //1
+             0.5, -0.5, 0.0, 0.5, 0.5, 0.5, //2
+             0.5, 0.5, 0.0, 0.5, 0.5, 0.5, //3
 
-            -0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, //1 //0
-            0.5f, 0.5f, 0.0f, 0.30f, 0.0f, 0.0f, //2 //1
-            0.0f, 0.9f, 0.0f, 1.0f, 0.0f, 0.0f,//3 //2
-            //-0.5f, 0.5f, 0.0f, 0.31f, 0.56f, 0.0f,//1 //0
-            -0.5f, -0.5f, 0.0f, 0.31f, 0.56f, 0.0f,//4 //3
-            0.5f, -0.5f, 0.0f, 0.31f, 0.86f, 0.0f,//5//4
-            //0.5f, -0.5f, 0.0f, 0.31f, 0.56f, 0.0f,//5//4
-            // 0.5f, 0.5f, 0.0f, 0.31f, 0.56f, 0.0f,//2//1
-            // 0.5f, 0.5f, 0.0f, 0.31f, 0.56f, 0.0f//1//0
+             // i ściany:
+             //1
+            0.5, 0.5, 0.0, 1.0, 0.0, 0.0, //3
+            0.0, 0.0, 1.0, 1.0, 0.0, 0.0, //
+            0.5, -0.5, 0.0, 1.0, 0.0, 0.0, //2
 
+            //2
+            -0.5, 0.5, 0.0, 0.0, 1.0, 0.0, //
+            0.0, 0.0, 1.0, 0.0, 1.0, 0.0, //
+            0.5, -0.5, 0.0, 0.0, 1.0, 0.0, //
 
+            //3
+            -0.5, -0.5, 0.0, 0.0, 0.0, 1.0, //
+            0.0, 0.0, 1.0, 0.0, 0.0, 1.0, //
+            -0.5, 0.5, 0.0, 0.0, 0.0, 1.0, //
+
+            //4
+            -0.5, 0.5, 0.0, 1.0, 0.0, 1.0, //1
+            0.0, 0.0, 1.0, 1.0, 0.0, 1.0, //
+            0.5, 0.5, 0.0, 1.0, 0.0, 1.0, //3
 
             // jeśli któraś współrzędna wykroczy poza zakres <-1,1> to nie będziemy widzieli całego trójkąta
             //zmiana współrzędnej z niczego nie zmienia (chyba że wykroczymy poza zakres <-1,1>, wówczas "obetnie" nam kawałek trójkąta
@@ -52,10 +66,14 @@ void SimpleShapeApplication::init() {
 
     };
 
+//
     std::vector<GLushort> indices = {
-            0,1,2,0,3,4,4,1,0 // wypisujemy tyle elementów ile mamy wierzchołków
+            0,1,2,1,3,2,
+            4,5,6,
+            7,8,9,
+            10,11,12,
+            13,14,15            // te chcemy
     };
-
 
     GLuint v_buffer_handle[2];
     glGenBuffers(2, v_buffer_handle);
@@ -66,7 +84,6 @@ void SimpleShapeApplication::init() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLfloat), indices.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-
     glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle[0]);
@@ -74,13 +91,16 @@ void SimpleShapeApplication::init() {
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3 * sizeof(GLfloat)));
+    glBindBuffer(GL_ARRAY_BUFFER,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, v_buffer_handle[1]);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
     auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
     if (u_modifiers_index == GL_INVALID_INDEX) { std::cout << "Cannot find Modifiers uniform block in program" << std::endl; }
-    else { glUniformBlockBinding(program, u_modifiers_index, 0); }
+    else {
+        glUniformBlockBinding(program, u_modifiers_index, 0);
+    }
 
     auto u_transformations_index = glGetUniformBlockIndex(program,"Transformations");
     if (u_transformations_index == GL_INVALID_INDEX) {
@@ -92,9 +112,10 @@ void SimpleShapeApplication::init() {
 
     GLuint ubo_handle[2];
     glGenBuffers(2,ubo_handle);
+
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle[0]);
-    float strength = 0.5;
-    float light[3] = {0.7, 0.2, 0.3};
+    float strength = 1.0;
+    float light[3] = {1.0, 1.0, 1.0};
     glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(float), nullptr, GL_STATIC_DRAW);
     glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(float),&strength);
     glBufferSubData(GL_UNIFORM_BUFFER,4 * sizeof(float),3 * sizeof(float),light);
@@ -105,11 +126,10 @@ void SimpleShapeApplication::init() {
 
     int w, h;
     std::tie(w, h) = frame_buffer_size();
-
-    auto V = glm::lookAt(glm::vec3{1.0,.5,2.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
-    auto P = glm::perspective(glm::half_pi<float>(),(float)w/h,0.1f,100.0f);
-   // glm::mat4 M(1.0f);
-    auto PVM = P * V;
+    auto V = glm::lookAt(glm::vec3{0.5,2.8,1.5},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
+    auto P = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
+    //glm::mat4 M(1.0f);
+    auto  PVM = P * V;
 
     glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr,GL_STATIC_DRAW);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
@@ -118,9 +138,34 @@ void SimpleShapeApplication::init() {
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
     glViewport(0, 0, w, h);
 
+//    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),sizeof(glm::mat4),&V[0]);
+//    glBufferSubData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4),sizeof(glm::mat4),&M[0]);
 
+    glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
+
+
+
+//    GLuint idx_buffer_handle;
+//    glGenBuffers(1,&idx_buffer_handle);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_handle);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLushort), indices.data(),
+//                 GL_STATIC_DRAW);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//
+//    glGenVertexArrays(1, &vao_);
+//    glBindVertexArray(vao_);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_handle);
+//    //glBindBuffer(GL_ARRAY_BUFFER, v_buffer_handle);
+//    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer_handle);
+//    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
+//    glEnableVertexAttribArray(1);
+//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3*sizeof(GLfloat)));
+//
+//    glBindBuffer(GL_ARRAY_BUFFER, 0);
+//    glBindVertexArray(0);
 
 }
 
@@ -128,7 +173,7 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
     glBindVertexArray(vao_);
-    glDrawElements(GL_TRIANGLES,9,GL_UNSIGNED_SHORT,reinterpret_cast<GLvoid *>(0));
+    glDrawElements(GL_TRIANGLES,18,GL_UNSIGNED_SHORT,reinterpret_cast<GLvoid *>(0));
     //glDrawArrays(GL_TRIANGLES, 0, 9);
     glBindVertexArray(0);
 }
