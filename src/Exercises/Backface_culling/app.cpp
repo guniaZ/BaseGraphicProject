@@ -126,7 +126,7 @@ void SimpleShapeApplication::init() {
 
     int w, h;
     std::tie(w, h) = frame_buffer_size();
-    auto V = glm::lookAt(glm::vec3{0.9,2.8,1.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
+    auto V = glm::lookAt(glm::vec3{-0.3,2.8,2.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
     auto P = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
     //glm::mat4 M(1.0f);
     auto  PVM = P * V;
@@ -144,8 +144,10 @@ void SimpleShapeApplication::init() {
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
-
-
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    //glFrontFace(GL_CW);
+    glCullFace(GL_BACK);
 }
 
 
