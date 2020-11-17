@@ -40,22 +40,22 @@ void SimpleShapeApplication::init() {
              0.5, 0.5, 0.0, 0.5, 0.1, 0.5, //3
 
              // i ściany:
-             //1
+             //1, żółta
             0.5, 0.5, 0.0, 0.9, 0.5, 0.0, //3
             0.0, 0.0, 1.0, 0.9, 0.5, 0.0, //
             0.5, -0.5, 0.0, 0.9, 0.5, 0.0, //2
 
-            //2
-            -0.5, 0.5, 0.0, 0.0, 1.0, 0.0, //
-            0.0, 0.0, 1.0, 0.0, 1.0, 0.0, //
-            0.5, -0.5, 0.0, 0.0, 1.0, 0.0, //
-
-            //3
+            //2, niebieska
             -0.5, -0.5, 0.0, 0.0, 0.2, 0.8, //
             0.0, 0.0, 1.0, 0.0, 0.2, 0.8, //
-            -0.5, 0.5, 0.0, 0.0, 0.2, 0.8, //
+            0.5, -0.5, 0.0, 0.0, 0.2, 0.8, //
 
-            //4
+            //3, zielona
+            -0.5, -0.5, 0.0, 0.1, 0.5, 0.0, //
+            0.0, 0.0, 1.0, 0.1, 0.5, 0.0, //
+            -0.5, 0.5, 0.0, 0.1, 0.5, 0.0, //
+
+            //4, fioletowa
             -0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //1
             0.0, 0.0, 1.0, 0.3, 0.0, 0.6, //
             0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //3
@@ -70,7 +70,7 @@ void SimpleShapeApplication::init() {
     std::vector<GLushort> indices = {
             0,1,2,1,3,2,
             4,5,6,
-            7,8,9,
+            9,8,7,
             10,11,12,
             13,14,15            // te chcemy
     };
@@ -126,9 +126,10 @@ void SimpleShapeApplication::init() {
 
     int w, h;
     std::tie(w, h) = frame_buffer_size();
-    auto V = glm::lookAt(glm::vec3{-0.3,2.8,2.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
+    auto V = glm::lookAt(glm::vec3{1.0,2.0,7.0},
+                         glm::vec3{0.0f,0.0f,0.0f},
+                         glm::vec3{0.0,0.0,2.0});
     auto P = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
-    //glm::mat4 M(1.0f);
     auto  PVM = P * V;
 
     glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr,GL_STATIC_DRAW);
@@ -158,4 +159,5 @@ void SimpleShapeApplication::frame() {
     //glDrawArrays(GL_TRIANGLES, 0, 9);
     glBindVertexArray(0);
 }
+
 
