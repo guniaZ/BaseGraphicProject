@@ -29,6 +29,20 @@ void SimpleShapeApplication::init() {
         std::cerr << std::string(PROJECT_DIR) + "/shaders/base_fs.glsl" << " shader files" << std::endl;
     }
 
+    auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
+    if (u_modifiers_index == GL_INVALID_INDEX) { std::cout << "Cannot find Modifiers uniform block in program" << std::endl; }
+    else {
+        glUniformBlockBinding(program, u_modifiers_index, 0);
+    }
+
+    auto u_transformations_index = glGetUniformBlockIndex(program,"Transformations");
+    if (u_transformations_index == GL_INVALID_INDEX) {
+        std::cout << "Cannot find Transformations uniform block in program" << std::endl;
+    }else {
+        glUniformBlockBinding(program, u_transformations_index, 1);
+    }
+
+
     std::vector<GLfloat> vertices = {
             // to są po prostu współrzędne wierzchołków: x,y, z
             // jeśli którąś zmienimy to zmienimy kształt, możemy też przesunąć wszystkie o ten sam wektor i wówczas cały trójkąt się przesunie
@@ -40,22 +54,22 @@ void SimpleShapeApplication::init() {
             0.5, 0.5, 0.0, 0.5, 0.1, 0.5, //3
 
             // i ściany:
-            //1
+            //1, żółta
             0.5, 0.5, 0.0, 0.9, 0.5, 0.0, //3
             0.0, 0.0, 1.0, 0.9, 0.5, 0.0, //
             0.5, -0.5, 0.0, 0.9, 0.5, 0.0, //2
 
-            //2
-            -0.5, 0.5, 0.0, 0.0, 1.0, 0.0, //
-            0.0, 0.0, 1.0, 0.0, 1.0, 0.0, //
-            0.5, -0.5, 0.0, 0.0, 1.0, 0.0, //
-
-            //3
+            //2, niebieska
             -0.5, -0.5, 0.0, 0.0, 0.2, 0.8, //
             0.0, 0.0, 1.0, 0.0, 0.2, 0.8, //
-            -0.5, 0.5, 0.0, 0.0, 0.2, 0.8, //
+            0.5, -0.5, 0.0, 0.0, 0.2, 0.8, //
 
-            //4
+            //3, zielona
+            -0.5, -0.5, 0.0, 0.1, 0.5, 0.0, //
+            0.0, 0.0, 1.0, 0.1, 0.5, 0.0, //
+            -0.5, 0.5, 0.0, 0.1, 0.5, 0.0, //
+
+            //4, fioletowa
             -0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //1
             0.0, 0.0, 1.0, 0.3, 0.0, 0.6, //
             0.5, 0.5, 0.0, 0.3, 0.0, 0.6, //3
@@ -70,10 +84,24 @@ void SimpleShapeApplication::init() {
     std::vector<GLushort> indices = {
             0,1,2,1,3,2,
             4,5,6,
-            7,8,9,
+            9,8,7,
             10,11,12,
             13,14,15            // te chcemy
     };
+
+    glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
+    int w, h;
+    std::tie(w, h) = frame_buffer_size();
+    aspect_ = (float)w/h;
+    fov_ = glm::pi<float>()/4.0;
+    near_ = 0.1f;
+    far_ = 100.0f;
+    P_ = glm::perspective(fov_, aspect_, near_, far_);
+    V_ = glm::lookAt(glm::vec3{0.0,1.1,5.0},
+                     glm::vec3{0.0f,0.0f,0.0f},
+                     glm::vec3{0.1,0.0,1.0});
+    glViewport(0, 0, w, h);
+
 
     GLuint v_buffer_handle[2];
     glGenBuffers(2, v_buffer_handle);
@@ -96,23 +124,9 @@ void SimpleShapeApplication::init() {
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
-    auto u_modifiers_index = glGetUniformBlockIndex(program, "Modifiers");
-    if (u_modifiers_index == GL_INVALID_INDEX) { std::cout << "Cannot find Modifiers uniform block in program" << std::endl; }
-    else {
-        glUniformBlockBinding(program, u_modifiers_index, 0);
-    }
-
-    auto u_transformations_index = glGetUniformBlockIndex(program,"Transformations");
-    if (u_transformations_index == GL_INVALID_INDEX) {
-        std::cout << "Cannot find Transformations uniform block in program" << std::endl;
-    }else {
-        glUniformBlockBinding(program, u_transformations_index, 1);
-    }
-
 
     GLuint ubo_handle[2];
     glGenBuffers(2,ubo_handle);
-
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle[0]);
     float strength = 1.0;
     float light[3] = {1.0, 1.0, 1.0};
@@ -121,55 +135,31 @@ void SimpleShapeApplication::init() {
     glBufferSubData(GL_UNIFORM_BUFFER,4 * sizeof(float),3 * sizeof(float),light);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
     glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_handle[0]);
-
     glBindBuffer(GL_UNIFORM_BUFFER,ubo_handle[1]);
 
-//
-//    int w, h;
-//    std::tie(w, h) = frame_buffer_size();
-//    auto V = glm::lookAt(glm::vec3{-0.3,2.8,2.0},glm::vec3{0.0f,0.0f,0.0f},glm::vec3{0.0,0.0,1.0});
-//    auto P = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
-//    //glm::mat4 M(1.0f);
-//    auto  PVM = P * V;
-
-
-    int w, h;
-    std::tie(w, h) = frame_buffer_size();
-    aspect_ = (float)w/h;
-    fov_ = glm::pi<float>()/4.0;
-    near_ = 0.1f;
-    far_ = 100.0f;
-    P_ = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
-    V_ = glm::lookAt(glm::vec3{-0.3,2.8,2.0},
-                     glm::vec3{0.0f,0.0f,0.0f},
-                     glm::vec3{0.0,0.0,1.0});
-
-
-//    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr,GL_STATIC_DRAW);
-//    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-//    glBindBuffer(GL_UNIFORM_BUFFER, 0);
-//    glBindBufferBase(GL_UNIFORM_BUFFER, 1, ubo_handle[1]);
-
-    glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
-    glViewport(0, 0, w, h);
 
 
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    //glFrontFace(GL_CW);
-    glCullFace(GL_BACK);
+//    glEnable(GL_CULL_FACE);
+//    glFrontFace(GL_CCW);
+//    //glFrontFace(GL_CW);
+//    glCullFace(GL_BACK);
 }
 
 
 
 void SimpleShapeApplication::frame() {
+    glGenBuffers(1, &u_pvm_buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
     auto PVM = P_ * V_;
-    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer_);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    //glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER, 0);
+    glBindBuffer(GL_UNIFORM_BUFFER, 1);
+    glBindBufferBase(GL_UNIFORM_BUFFER,1,u_pvm_buffer);
+
     glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES,18,GL_UNSIGNED_SHORT,reinterpret_cast<GLvoid *>(0));
     //glDrawArrays(GL_TRIANGLES, 0, 9);
@@ -180,5 +170,5 @@ void SimpleShapeApplication::framebuffer_resize_callback(int w, int h) {
     Application::framebuffer_resize_callback(w, h);
     glViewport(0,0,w,h);
     aspect_ = (float) w / h;
-    P_ = glm::perspective(glm::half_pi<float>()/2.0f,(float)w /h,0.1f,100.0f);
+    P_ = glm::perspective(fov_, aspect_, near_, far_);
 }
