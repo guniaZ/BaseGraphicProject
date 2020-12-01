@@ -10,7 +10,7 @@
 #include "Application/application.h"
 #include "Application/utils.h"
 #include "app.h"
-#include "camera.h"
+//#include "camera.h"  // tak tak brawo, includuj sobie po raz drugi a potem się dziw że nie działa -,-
 #include "camera_controler.h"
 #include "glad/glad.h"
 #include <glm/mat4x4.hpp>
@@ -28,7 +28,9 @@ public:
     // ta funkcja tutaj robi robotę! :
     void scroll_callback(double xoffset, double yoffset) override{
         Application::scroll_callback(xoffset, yoffset);
-        camera()->zoom(yoffset / 30.0);
+        if (controler_)
+            controler_->zoom(yoffset /30.0);
+        //camera()->zoom(yoffset / 30.0);
     }
 
     void mouse_button_callback(int button, int action, int mods) override;
@@ -40,12 +42,12 @@ public:
     Camera *camera() { return camera_; }
 
     ~SimpleShapeApplication() {
-        if (camera_) {
-            delete camera_;
-        }
+        delete controler_;
+        delete camera_;
+
     }
 
-    CameraControler *controler_;
+    //
 
     void set_controler(CameraControler *controler) { controler_ = controler; }
 
@@ -54,6 +56,7 @@ public:
 private:
     GLuint vao_;
     Camera *camera_;
-    GLuint u_pvm_buffer;
+    CameraControler *controler_;
+    GLuint ubo_handle_[2];
 
 };

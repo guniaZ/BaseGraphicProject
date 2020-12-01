@@ -13,7 +13,6 @@ class CameraControler {
 public:
     CameraControler(Camera *camera): camera_(camera), LMB_pressed_(false), scale_(0.015f){};
     CameraControler():camera_(nullptr) {}
-    //CameraControler(Camera* camera):camera_(camera) {}
 
     void set_camera(Camera *camera) { camera_ = camera; }
 
@@ -33,6 +32,7 @@ public:
         }
     };
 
+    //naciśnięcie i puszczenie przycisku na myszce:
     void LMB_pressed(float x, float y) {
         LMB_pressed_ = true;
         x_ = x;

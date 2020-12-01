@@ -20,9 +20,8 @@ inline float inverse_logistic(float y) {
 class Camera {
 public:
 
-
+// usuwamy zmienne:
     void look_at(const glm::vec3 &eye, const glm::vec3 &center, const glm::vec3 &up) {
-        V_ = glm::lookAt(eye, center, up);
         z_ = glm::normalize(eye - center);
         x_ = glm::normalize(glm::cross(up, z_));
         y_ = glm::normalize(glm::cross(z_, x_));
@@ -42,18 +41,6 @@ public:
         aspect_ = aspect;
     }
 
-    //UWAGA
-//    void set_camera(float camera){
-//        camera_ = camera;
-//    }
-
-    void set_fov(float fov){
-        fov_ = fov;
-    }
-
-    //void fov(){};
-
-    //
 
     void zoom(float y_offset) {
         auto x = fov_ / glm::pi<float>(); // zamiana na zakres  [0,1]
@@ -61,6 +48,14 @@ public:
         y += y_offset;
         fov_ = logistic(y) * glm::pi<float>(); // i z powrotem
     }
+
+    void rotate(float angle, const glm::vec3 &axis){
+        auto R = rotation(angle, axis);
+        x_ =R*x_;
+        y_ =R*y_;
+        z_ =R*z_;
+    }
+
 
     void rotate_around_point(float angle, const glm::vec3 &axis, const glm::vec3 &c) {
         auto R = rotation(angle, axis);
@@ -81,12 +76,18 @@ public:
 
     glm::mat4 projection() const { return glm::perspective(fov_, aspect_, near_, far_); }
 
+
+    // odczytujemy sobie odpowiednie wartości
     glm::vec3 x() const { return x_; }
     glm::vec3 y() const { return y_; }
     glm::vec3 z() const { return z_; }
     glm::vec3 position() const { return position_; }
     glm::vec3 center() const { return center_; }
+    float fov() const {return fov_;};
+    void set_fov(float fov) {fov_ = fov;};
 
+
+// generujemy macierz V (tą którą usunęliśmy w stosunku do poprzedniego zadania):
     glm::mat4 view() const {
         glm::mat4 V(1.0f);
         for (int i = 0; i < 3; ++i) {
@@ -111,11 +112,11 @@ private:
     float aspect_;
     float near_;
     float far_;
-    //float camera_;
+
+
     glm::vec3 position_;
     glm::vec3 center_;
 
-    glm::mat4 V_;
     glm::vec3 x_;
     glm::vec3 y_;
     glm::vec3 z_;

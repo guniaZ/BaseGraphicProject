@@ -9,14 +9,7 @@
 #include <vector>
 #include <tuple>
 
-#include "camera.h"
-#include "Application/utils.h"
-//#include "camera_controler.h"
-#include "rotation.h"
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/gtc/matrix_transform.hpp>
+
 
 
 void SimpleShapeApplication::init() {
@@ -94,17 +87,19 @@ void SimpleShapeApplication::init() {
 
 
     set_camera(new Camera);
-    camera()->look_at(glm::vec3{0.0, 1.1, 5.0}, glm::vec3{0.0, 0.0, 0.0},glm::vec3{0.1,0.0,1.0} );
+    camera()->look_at(glm::vec3{1.0,2.0,7.0},
+                      glm::vec3{0.0f,0.0f,0.0f},
+                      glm::vec3{0.0,0.0,2.0});
     set_controler(new CameraControler(camera()));
 
 
-    glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
+
     int w, h;
     std::tie(w, h) = frame_buffer_size();
     auto aspect = (float)w/h;
     camera()->perspective(glm::pi<float>() /4.0, aspect, 0.1f, 100.0f);
 
-    glViewport(0, 0, w, h);
+
 
 
     GLuint v_buffer_handle[2];
@@ -129,19 +124,22 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
 
-    GLuint ubo_handle[2];
-    glGenBuffers(2,ubo_handle);
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle[0]);
+   // GLuint ubo_handle_[2];
+    glGenBuffers(2,ubo_handle_);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_[0]);
     float strength = 1.0;
     float light[3] = {1.0, 1.0, 1.0};
     glBufferData(GL_UNIFORM_BUFFER, 8 * sizeof(float), nullptr, GL_STATIC_DRAW);
     glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(float),&strength);
     glBufferSubData(GL_UNIFORM_BUFFER,4 * sizeof(float),3 * sizeof(float),light);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_handle[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER,ubo_handle[1]);
+    glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo_handle_[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER,ubo_handle_[1]);
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
 
-
+    glBindBufferBase(GL_UNIFORM_BUFFER,1, ubo_handle_[1]);
+    glViewport(0, 0, w, h);
+    glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
 
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
@@ -153,13 +151,10 @@ void SimpleShapeApplication::init() {
 
 
 void SimpleShapeApplication::frame() {
-    glGenBuffers(1, &u_pvm_buffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
     auto PVM = camera()-> projection() * camera() ->view();
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_[1]);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
-    glBindBuffer(GL_UNIFORM_BUFFER, 1);
-    glBindBufferBase(GL_UNIFORM_BUFFER,1,u_pvm_buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
     glBindVertexArray(vao_);
     glDrawElements(GL_TRIANGLES,18,GL_UNSIGNED_SHORT,reinterpret_cast<GLvoid *>(0));
