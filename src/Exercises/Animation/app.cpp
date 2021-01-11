@@ -46,7 +46,7 @@ void SimpleShapeApplication::init() {
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
     glBufferData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
 
-    //set_camera(new Camera);
+    set_camera(new Camera);
     int w, h;
     std::tie(w, h) = frame_buffer_size();
     float aspect_ = (float)w/h;
@@ -56,7 +56,7 @@ void SimpleShapeApplication::init() {
 
     camera()->perspective(fov_, aspect_, near_, far_);
     camera()-> look_at(glm::vec3{0.0,0.0,20.0}, glm::vec3{0.0,0.0,0.0}, glm::vec3{0.0,1.0,1.0});
-    //set_controler(new CameraControler(camera()));
+    set_controler(new CameraControler(camera()));
 
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &camera()->projection()[0]);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),sizeof(glm::mat4), &camera()->view()[0]);

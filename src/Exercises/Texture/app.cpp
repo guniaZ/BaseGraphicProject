@@ -10,7 +10,7 @@
 #include <tuple>
 #include <memory>
 
-#include "pyramid.cpp"
+#include "pyramid.h"
 //#include "pyramid.h"
 
 
