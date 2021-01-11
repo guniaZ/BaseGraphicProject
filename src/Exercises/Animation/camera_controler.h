@@ -8,6 +8,7 @@
 #endif //INC_3DGRAPHICSEXAMPLES_CAMERA_CONTROLER_H
 
 #include "camera.h"
+#include "glm/glm.hpp"
 
 class CameraControler {
 public:

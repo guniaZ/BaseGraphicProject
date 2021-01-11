@@ -13,8 +13,9 @@
 #include "camera.h"
 #include "camera_controler.h"
 #include "glad/glad.h"
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+//#include <glm/mat4x4.hpp>
+//#include <glm/gtc/matrix_transform.hpp>
 
 #include "pyramid.h"
 
@@ -27,11 +28,9 @@ public:
     void framebuffer_resize_callback(int w, int h) override;
     void frame() override;
 
-    // ta funkcja tutaj robi robotę! :
-    void scroll_callback(double xoffset, double yoffset) override{
-        Application::scroll_callback(xoffset, yoffset);
-        camera()->zoom(yoffset / 30.0);
-    }
+
+
+   void scroll_callback(double xoffset, double yoffset) override;
 
     void mouse_button_callback(int button, int action, int mods) override;
 
@@ -57,7 +56,7 @@ public:
 private:
     GLuint vao_;
     Camera *camera_;
-    GLuint ubo_handle_[2];
+    GLuint ubo_handle_;                                      //TU u_pvm_buffer_
     CameraControler *controler_;
 
     std::chrono::steady_clock::time_point start_;

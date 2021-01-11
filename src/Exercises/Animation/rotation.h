@@ -3,6 +3,7 @@
 //
 
 #include <glm/mat4x4.hpp>
+#include <cmath>
 
 #ifndef INC_3DGRAPHICSEXAMPLES_ROTATION_H
 #define INC_3DGRAPHICSEXAMPLES_ROTATION_H

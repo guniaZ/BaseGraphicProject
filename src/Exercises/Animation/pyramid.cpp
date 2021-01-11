@@ -3,7 +3,6 @@
 //
 
 #include "pyramid.h"
-#include "app.h"
 #include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -49,6 +48,7 @@ Pyramid::Pyramid() {
 
     };
 
+
 //
     std::vector<GLushort> indices_ = {
             0,1,2,1,3,2,
@@ -59,7 +59,7 @@ Pyramid::Pyramid() {
     };
 
 
-    glGenVertexArrays(1, &vao_);
+
     glGenBuffers(2, buffer_);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_[0]);
     glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(GLfloat), vertices_.data(), GL_STATIC_DRAW);
@@ -68,6 +68,7 @@ Pyramid::Pyramid() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(GLfloat), indices_.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    glGenVertexArrays(1, &vao_);
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_[0]);
     glEnableVertexAttribArray(0);
@@ -87,6 +88,6 @@ Pyramid::~Pyramid() {
 
 void Pyramid::draw() {
     glBindVertexArray(vao_);
-    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid*>(0));
     glBindVertexArray(0);
 }

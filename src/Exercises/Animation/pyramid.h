@@ -18,13 +18,13 @@ public:
     ~Pyramid();
     void draw();
 
-    Pyramid(const Pyramid& rhs) = delete;
-    Pyramid &operator=(const Pyramid& rhs) = delete;
+//    Pyramid(const Pyramid& rhs) = delete;                         //to tu było
+//    Pyramid &operator=(const Pyramid& rhs) = delete;
+//
+//    void operator=(Pyramid&& rhs) = delete;
+//    Pyramid(Pyramid&& rhs) = delete;
 
-    void operator=(Pyramid&& rhs) = delete;
-    Pyramid(Pyramid&& rhs) = delete;
 
-    //std::shared_ptr<Pyramid> pyramid_;
 
 
 private:
