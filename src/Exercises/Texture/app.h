@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "pyramid.h"
-//#include "camera.h"  // tak tak brawo, includuj sobie po raz drugi a potem się dziw że nie działa -,-
+#include "camera.h"  // tak tak brawo, includuj sobie po raz drugi a potem się dziw że nie działa -,-
 #include "camera_controler.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"

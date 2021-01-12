@@ -15,9 +15,6 @@
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-//#include <glm/vec3.hpp> // glm::vec3
-//#include <glm/vec4.hpp> // glm::vec4
-
 
 
 void SimpleShapeApplication::init() {
@@ -47,6 +44,7 @@ void SimpleShapeApplication::init() {
     glBufferData(GL_UNIFORM_BUFFER, 2*sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
 
     set_camera(new Camera);
+    set_controler(new CameraControler(camera()));
     int w, h;
     std::tie(w, h) = frame_buffer_size();
     float aspect_ = (float)w/h;
@@ -55,8 +53,10 @@ void SimpleShapeApplication::init() {
     float far_ = 100.0f;
 
     camera()->perspective(fov_, aspect_, near_, far_);
-    camera()-> look_at(glm::vec3{0.0,0.0,20.0}, glm::vec3{0.0,0.0,0.0}, glm::vec3{0.0,1.0,1.0});
-    set_controler(new CameraControler(camera()));
+    camera()-> look_at(glm::vec3{0.0,0.0,20.0},
+                       glm::vec3{0.0,0.0,0.0},
+                       glm::vec3{0.0,1.0,1.0});
+
 
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &camera()->projection()[0]);
     glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),sizeof(glm::mat4), &camera()->view()[0]);
@@ -85,71 +85,80 @@ void SimpleShapeApplication::init() {
 
 void SimpleShapeApplication::frame() {
 
+    //dobra, po kolei, bez bycia spryciarzem, po kolei
+
+    //ustalamy czas i kąt obrotu
     auto now = std::chrono::steady_clock::now();
-    auto elapsed_time = std::chrono::duration_cast<std::chrono::duration<float>>(now - start_).count();
-    float rotation_angle = glm::two_pi<float>()*elapsed_time/rotation_period;
+    auto elapsed_time_ = std::chrono::duration_cast<std::chrono::duration<float>>(now - start_).count();
+    float rotation_angle = glm::two_pi<float>()*elapsed_time_/rotation_period;
 
-    glm::mat4 main_TR = glm::translate(glm::mat4(1.0f),glm::vec3(-0.5f, -0.5f, 0.0f));
 
-    glm::mat4 R_earth = glm::rotate(glm::mat4(1.0f), rotation_angle, glm::vec3(0.0f, 0.0f, 1.0f));
-    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
-
-    auto rotated = camera()->view() * R_earth;
+    //ZIEMIA:
 
     auto orbital_rotation_period = 20.0f;
-    auto orbital_rotation_angle = 2.0f * glm::pi<float>()*elapsed_time/orbital_rotation_period;
+    auto orbital_rotation_angle = 2.0f * glm::pi<float>()*elapsed_time_/orbital_rotation_period;
     auto a = 10.0f;
     auto b = 8.0f;
-    auto moon_rotation_period = 10.0f;
-    auto moon_rotation_angle = 2.0f * glm::pi<float>()*elapsed_time/moon_rotation_period;
 
+    //czy cos i sinus sa dobrze? ciężko stwierdzić, jak zacznie wyglądać lepiej to zobaczymy
     float x = a*cos(orbital_rotation_angle);
     float y = b*sin(orbital_rotation_angle);
 
+
+    //no dobra, zmieniłam na x,y, 0
+    glm::mat4 R_earth = glm::rotate(glm::mat4(1.0f), rotation_angle, glm::vec3(0.0f, 0.0f, 1.0f));
     glm::mat4 O_earth = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
-    auto orbited = camera()->view()*O_earth*R_earth;
+
+    auto orbited = camera()-> projection() *camera()-> view()*O_earth*R_earth;
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
+    glBufferSubData(GL_UNIFORM_BUFFER,0, sizeof(glm::mat4),&orbited[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER,0);
+
+    pyramid_ -> draw();
 
 
 
+    //KSIĘŻYC
+    auto moon_rotation_period = 10.0f;
+    auto moon_rotation_angle = 2.0f * glm::pi<float>()*elapsed_time_/moon_rotation_period;
+
+    //r_monn = 3 więc:
     float x_moon = 3.0*cos(moon_rotation_angle);
     float y_moon = 3.0*sin(moon_rotation_angle);
 
-    auto S_moon = glm::scale(glm::mat4(1.0f), glm::vec3(0.794f, 0.794f, 0.794f)); // 0.794 ~= 1/sqrt3(2)
-    auto R_moon = glm::rotate(glm::mat4(1.0f), moon_rotation_angle, glm::vec3{0.0f, 0.0f, 1.0f});
-    auto O_moon = glm::translate(glm::mat4(1.0f),glm::vec3(x_moon, y_moon, 0));
+    glm::mat4 S_moon = glm::scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)); //tak Pan pokazywał
+    glm::mat4 R_moon = glm::rotate(glm::mat4(1.0f), moon_rotation_angle, glm::vec3{0.0f, 0.0f, 1.0f});
+    glm::mat4 O_moon = glm::translate(glm::mat4(1.0f),glm::vec3(x_moon, y_moon, 0));
 
-    glm::mat4 moon_transform = camera()->view()*O_moon*R_moon*S_moon;
+    glm::mat4 moon_transform = camera()->projection()*camera()->view()*O_earth*O_moon*R_moon*S_moon;
+
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
+    glBufferSubData(GL_UNIFORM_BUFFER,0, sizeof(glm::mat4),&moon_transform[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER,0);
+
+    pyramid_ -> draw();
 
 
+    // SATELITA
     auto satellite_rotation_period = 2.0f;
-    auto satellite_rotation_angle = 2.0f*glm::pi<float>()*elapsed_time/satellite_rotation_period;
+    auto satellite_rotation_angle = 2.0f*glm::pi<float>()*elapsed_time_/satellite_rotation_period;
     float x_sat = 1.5*cos(moon_rotation_angle);
     float y_sat= 1.5*sin(moon_rotation_angle);
 
-    auto S_sat = glm::scale(glm::mat4(1.0f), glm::vec3(0.63f, 0.63f, 0.63f)); // bo 0.63 ~= 1/sqrt3(4)
-    auto R_sat = glm::rotate(glm::mat4(1.0f), satellite_rotation_angle, glm::vec3(0.0f, 1.0f, 0.0f));
+    auto S_sat = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)); // tak miał Pan
+    auto R_sat = glm::rotate(glm::mat4(1.0f), satellite_rotation_angle, glm::vec3(0.0f, 0.0f, 1.0f));
     auto O_sat = glm::translate(glm::mat4(1.0f), glm::vec3(x_sat,0, y_sat));
 
-    glm::mat4 sat_transform = camera()->view()*O_sat*R_sat*S_sat;
+    auto tilt_sat = glm::rotate(glm::mat4(1.0f),glm::pi<float>()/2.0f,glm::vec3{1.0f, 0.0f,0.0f});
 
-    glm::mat4 transforms[] ={
-            rotated,
-            orbited,
-            moon_transform,
-            sat_transform};
+    glm::mat4 sat_transform = camera()->projection()*camera()->view()*O_earth*tilt_sat*O_sat*R_sat*S_sat;
 
-// może tak w końcu się narysuje coś:
 
-    for(glm::mat4 transform : transforms){
-        auto moved_to_main_pyramid_center = transform *main_TR;
+    glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
+    glBufferSubData(GL_UNIFORM_BUFFER,0, sizeof(glm::mat4),&sat_transform[0]);
+    glBindBuffer(GL_UNIFORM_BUFFER,0);
 
-        glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &camera()->projection()[0]);
-        glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), sizeof(glm::mat4), &moved_to_main_pyramid_center[0]);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-        pyramid_ -> draw();
-    }
+    pyramid_ -> draw();
 
 //  STARE poszło precz
 
