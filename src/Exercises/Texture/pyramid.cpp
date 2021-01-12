@@ -52,27 +52,26 @@ Pyramid::Pyramid() {
     glBufferData(GL_ARRAY_BUFFER, vertices_.size() * sizeof(GLfloat), vertices_.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_[1]);
-    //tu sizeof(GLushort):
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices_.size() * sizeof(GLushort), indices_.data(), GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_[0]);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(0));
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3 * sizeof(GLfloat)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), reinterpret_cast<GLvoid *>(3 * sizeof(GLfloat))); //tu musi być 5* loool
     glBindBuffer(GL_ARRAY_BUFFER,0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer_[1]);
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
 
     auto texture_filename = std::string(PROJECT_DIR) + "/Textures/multicolor.png";
-    uint8_t *data;
+
     stbi_set_flip_vertically_on_load(true);
 
     int width, height, n_channels;
-    data = stbi_load(texture_filename.c_str(),&width, &height, &n_channels, 0);
+    uint8_t *data = stbi_load(texture_filename.c_str(),&width, &height, &n_channels, 0);
     //sprawdzonko:
     if (data == nullptr){
         std::cerr<<"nie mogem załadować obrazka z pliku:'"<<texture_filename<<" przykro mi \n";
@@ -84,11 +83,11 @@ Pyramid::Pyramid() {
     glActiveTexture(GL_TEXTURE);
     glBindTexture(GL_TEXTURE_2D, diffuse_texture_);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    auto status = glGetError();
-    //i jeszcze jedno sprawdzonko, coby się nie sypało głupio
-    if (status != GL_NO_ERROR){
-        std::cerr <<"Error, znowu ci nie działa hehe"<< status << "\n";
-    }
+//    auto status = glGetError();
+//    //i jeszcze jedno sprawdzonko, coby się nie sypało głupio
+//    if (status != GL_NO_ERROR){
+//        std::cerr <<"Error, znowu ci nie działa hehe"<< status << "\n";
+//    }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -98,15 +97,14 @@ Pyramid::Pyramid() {
  Pyramid::~Pyramid() {
     glDeleteVertexArrays(1,&vao_);
     glDeleteBuffers(2, buffer_);
-    glDeleteTextures(1,&diffuse_texture_);
 }
 
 void Pyramid::draw() {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, diffuse_texture_);
     glBindVertexArray(vao_);
-    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(0));
+    glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_SHORT, reinterpret_cast<GLvoid*>(0));
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
-    //Tu wywolujemy polecenie glDrawElements
+
 }

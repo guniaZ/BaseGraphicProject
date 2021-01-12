@@ -2,20 +2,22 @@
 // Created by pbialas on 05.08.2020.
 //
 
+
+
 #pragma once
 
 #include <vector>
 
-
-#include "Application/application.h"
-#include "Application/utils.h"
-#include "app.h"
 #include "pyramid.h"
 //#include "camera.h"  // tak tak brawo, includuj sobie po raz drugi a potem się dziw że nie działa -,-
 #include "camera_controler.h"
 #include "glad/glad.h"
-#include <glm/mat4x4.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/glm.hpp"
+
+
+#include "Application/application.h"
+#include "Application/utils.h"
+
 
 class SimpleShapeApplication : public xe::Application {
 public:
@@ -27,12 +29,7 @@ public:
     void frame() override;
 
     // ta funkcja tutaj robi robotę! :
-    void scroll_callback(double xoffset, double yoffset) override{
-        Application::scroll_callback(xoffset, yoffset);
-        if (controler_)
-            controler_->zoom(yoffset /30.0);
-        //camera()->zoom(yoffset / 30.0);
-    }
+    void scroll_callback(double xoffset, double yoffset) override;
 
     void mouse_button_callback(int button, int action, int mods) override;
 
@@ -61,6 +58,6 @@ private:
     GLuint vao_;
     Camera *camera_;
     CameraControler *controler_;
-    GLuint ubo_handle_[2];
+    GLuint ubo_handle_;
 
 };

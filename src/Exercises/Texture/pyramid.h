@@ -10,8 +10,7 @@
 #pragma once
 
 #include "glad/glad.h"
-#include <iostream>
-#include <memory>
+
 
 
 class Pyramid  {
@@ -19,14 +18,6 @@ public:
     Pyramid();
     ~Pyramid();
     void draw();
-
-//    Pyramid(const Pyramid& rhs) = delete;
-//    Pyramid &operator=(const Pyramid& rhs) = delete;
-//
-//    void operator=(Pyramid&& rhs) = delete;
-//    Pyramid(Pyramid&& rhs) = delete;
-//
-//    std::shared_ptr<Pyramid>pyramid_;
 
 
 private:

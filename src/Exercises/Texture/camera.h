@@ -5,22 +5,22 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "rotation.h"
+#include "glm/gtx/string_cast.hpp"
 
-
-inline float logistic(float x) {
-    return 1.0f/(1.0f+std::exp(-x));
+inline     float logistic(float y) {
+    return 1.0f/(1.0f+std::exp(-y));
 }
 
-inline float inverse_logistic(float y) {
-    return std::log(y/(1.0f-y));
+inline float inverse_logistic(float x) {
+    return std::log(x/ (1.0f - x));
 }
-
 
 
 class Camera {
 public:
 
 // usuwamy zmienne:
+
     void look_at(const glm::vec3 &eye, const glm::vec3 &center, const glm::vec3 &up) {
         z_ = glm::normalize(eye - center);
         x_ = glm::normalize(glm::cross(up, z_));
@@ -49,12 +49,7 @@ public:
         fov_ = logistic(y) * glm::pi<float>(); // i z powrotem
     }
 
-    void rotate(float angle, const glm::vec3 &axis){
-        auto R = rotation(angle, axis);
-        x_ =R*x_;
-        y_ =R*y_;
-        z_ =R*z_;
-    }
+
 
 
     void rotate_around_point(float angle, const glm::vec3 &axis, const glm::vec3 &c) {
@@ -83,6 +78,7 @@ public:
     glm::vec3 z() const { return z_; }
     glm::vec3 position() const { return position_; }
     glm::vec3 center() const { return center_; }
+
     float fov() const {return fov_;};
     void set_fov(float fov) {fov_ = fov;};
 

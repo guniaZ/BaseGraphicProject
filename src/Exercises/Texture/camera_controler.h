@@ -8,11 +8,13 @@
 #endif //INC_3DGRAPHICSEXAMPLES_CAMERA_CONTROLER_H
 
 #include "camera.h"
+#include "glm/glm.hpp"
 
 class CameraControler {
 public:
     CameraControler(Camera *camera): camera_(camera), LMB_pressed_(false), scale_(0.015f){};
     CameraControler():camera_(nullptr) {}
+    //CameraControler(Camera* camera):camera_(camera) {}
 
     void set_camera(Camera *camera) { camera_ = camera; }
 

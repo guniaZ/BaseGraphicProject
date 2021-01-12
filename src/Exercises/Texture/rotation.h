@@ -2,7 +2,8 @@
 // Created by gunigma on 24.11.2020.
 //
 
-#include <glm/mat4x4.hpp>
+#include "glm/glm.hpp"
+#include <cmath>
 
 #ifndef INC_3DGRAPHICSEXAMPLES_ROTATION_H
 #define INC_3DGRAPHICSEXAMPLES_ROTATION_H
