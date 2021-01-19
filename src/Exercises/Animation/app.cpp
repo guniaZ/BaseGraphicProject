@@ -142,12 +142,12 @@ void SimpleShapeApplication::frame() {
     // SATELITA
     auto satellite_rotation_period = 2.0f;
     auto satellite_rotation_angle = 2.0f*glm::pi<float>()*elapsed_time_/satellite_rotation_period;
-    float x_sat = 1.5*cos(moon_rotation_angle);
-    float y_sat= 1.5*sin(moon_rotation_angle);
+    float x_sat = 1.5*cos(satellite_rotation_angle);
+    float y_sat= 1.5*sin(satellite_rotation_angle);
 
     auto S_sat = glm::scale(glm::mat4(1.0f), glm::vec3(0.2f, 0.2f, 0.2f)); // tak miał Pan
     auto R_sat = glm::rotate(glm::mat4(1.0f), satellite_rotation_angle, glm::vec3(0.0f, 0.0f, 1.0f));
-    auto O_sat = glm::translate(glm::mat4(1.0f), glm::vec3(x_sat,0, y_sat));
+    auto O_sat = glm::translate(glm::mat4(1.0f), glm::vec3(x_sat, y_sat,0));
 
     auto tilt_sat = glm::rotate(glm::mat4(1.0f),glm::pi<float>()/2.0f,glm::vec3{1.0f, 0.0f,0.0f});
 
