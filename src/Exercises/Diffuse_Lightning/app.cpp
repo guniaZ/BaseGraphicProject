@@ -59,13 +59,6 @@ void SimpleShapeApplication::init() {
 
 
 
-    set_camera(new Camera);
-    camera()->look_at(glm::vec3{0.0,0.0,7.0},
-                      glm::vec3{0.0f,0.0f,0.0f},
-                      glm::vec3{0.0,0.0,1.0});
-    set_controler(new CameraControler(camera()));
-
-
 
     glGenBuffers(1, &ubo_handle_);
     glBindBuffer(GL_UNIFORM_BUFFER, ubo_handle_);
@@ -80,8 +73,8 @@ void SimpleShapeApplication::init() {
     float far_ = 100.0f;
 
     camera()->perspective(fov_, aspect_, near_, far_);
-    camera()-> look_at(glm::vec3{0.0,0.0,8.0},
-                       glm::vec3{0.5,0.5,0.0},
+    camera()-> look_at(glm::vec3{0.0,0.0,5.0},
+                       glm::vec3{0.0,0.0,0.0},
                        glm::vec3{0.0,1.0,1.0});
     set_controler(new CameraControler(camera()));
 
@@ -93,7 +86,7 @@ void SimpleShapeApplication::init() {
 
     glGenBuffers(1, &u_light_buffer_);
     glBindBuffer(GL_UNIFORM_BUFFER, u_light_buffer_);
-    glBufferData(GL_UNIFORM_BUFFER, 3*sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_UNIFORM_BUFFER, 3*sizeof(glm::vec4) + sizeof(glm::vec4), nullptr, GL_STATIC_DRAW);
 
 
     //tu się zaczyna magia światła
@@ -149,6 +142,7 @@ void SimpleShapeApplication::frame() {
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::vec4), &light_.position[0]);
     glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+    glFrontFace(GL_CW);
     quad_ -> draw();
 
 }

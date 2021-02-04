@@ -27,3 +27,7 @@ private:
     GLuint diffuse_texture_;
 
 };
+
+// w app.cpp nie trzeba nic zmieniać
+// w szaderze vertexów też nic nie trzeba zmienić
+// jedyne zmiany na początku tylko w szaderze fragmentów
