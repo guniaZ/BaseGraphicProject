@@ -138,20 +138,22 @@ void SimpleShapeApplication::init() {
 
 
 
+
     glEnable(GL_DEPTH_TEST);
     glUseProgram(program);
 
+    glGenBuffers(1, &u_pvm_buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
 
-    
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
 }
 
 
 
 void SimpleShapeApplication::frame() {
-    glGenBuffers(1, &u_pvm_buffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
+
     auto PVM = camera()-> projection() * camera() ->view();
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
+
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
     glBindBuffer(GL_UNIFORM_BUFFER, 1);
     glBindBufferBase(GL_UNIFORM_BUFFER,1,u_pvm_buffer);

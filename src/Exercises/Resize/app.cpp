@@ -146,16 +146,19 @@ void SimpleShapeApplication::init() {
 //    glFrontFace(GL_CCW);
 //    //glFrontFace(GL_CW);
 //    glCullFace(GL_BACK);
+
+    glGenBuffers(1, &u_pvm_buffer);
+    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
+
+    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
 }
 
 
 
 void SimpleShapeApplication::frame() {
-    glGenBuffers(1, &u_pvm_buffer);
-    glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
+
     auto PVM = P_ * V_;
-    glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::mat4), nullptr, GL_STATIC_DRAW);
-    //glBindBuffer(GL_UNIFORM_BUFFER, u_pvm_buffer);
+
     glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &PVM[0]);
     glBindBuffer(GL_UNIFORM_BUFFER, 1);
     glBindBufferBase(GL_UNIFORM_BUFFER,1,u_pvm_buffer);
