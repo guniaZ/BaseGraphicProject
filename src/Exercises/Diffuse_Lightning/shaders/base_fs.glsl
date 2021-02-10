@@ -16,7 +16,6 @@ layout(std140) uniform Light{
 } light;
 
 
-
 void main() {
     //vFragColor=texture(diffuse_map, vertex_texture_coordinates);
 

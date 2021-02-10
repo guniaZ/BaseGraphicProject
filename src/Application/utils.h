@@ -26,6 +26,12 @@ namespace xe {
 
     GLuint create_program(const std::string &vs_path, const std::string &fs_path);
 
+    void set_uniform1i(GLuint program, const std::string& name, int value);
+    void set_uniform_block_binding(GLuint program, const std::string &name, GLuint binding);
+    std::string error_msg(GLenum status); //pewnie się przyda xd
+    uint8_t *load_image(const std::string &filename, int *width, int *height, int *n_channels);
+    void load_texture(const std::string &filename);
+
 
 
 }
