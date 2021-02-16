@@ -76,5 +76,5 @@ void main() {
     vFragColor.a = diffuse_color.a;
     vFragColor.rgb = diffuse_color.rgb *light.ambient.rgb;
     vFragColor.rgb += light_in*diffuse_color.rgb*light.color;
-    vFragColor.rgb += light_in*light.color.rgb*specular;
+    vFragColor.rgb += light_in*light.color.rgb*specular*specular_color;
 }

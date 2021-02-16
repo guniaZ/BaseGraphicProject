@@ -75,15 +75,14 @@ void SimpleShapeApplication::init() {
     float far_ = 100.0f;
 
     camera()->perspective(fov_, aspect_, near_, far_);
-    camera()-> look_at(glm::vec3{0.0,0.0,-5.0},
+    camera()-> look_at(glm::vec3{0.0,0.0,4.0},
                        glm::vec3{0.0,0.0,0.0},
-                       glm::vec3{0.1,1.0,1.0});
+                       glm::vec3{0.1,0.0,1.0});
     set_controler(new CameraControler(camera()));
 
     // tu się zaczyna magia światła
-    auto V = camera() -> view();
 
-    light_.position = V*glm::vec4(0.0f, 1.0f, 0.0f,1.0f);
+    light_.position = glm::vec4(0.0f, 0.0f, 1.0f,1.0f);
     std::cout<<glm::to_string(light_.position)<<std::endl;
     light_.color = glm::vec4(1.0f, 1.0f, 1.0f,1.0f);
     light_.a = glm::vec4(1.0f, 0.0f, 1.0f,0.0f);
@@ -113,9 +112,6 @@ void SimpleShapeApplication::init() {
     material_1_->Ns_map = textures_[1];                            //tu zmień z 0!
     quad_->setMaterial(material_1_);
 
-    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), &camera()->projection()[0]);
-    glBufferSubData(GL_UNIFORM_BUFFER, sizeof(glm::mat4),sizeof(glm::mat4), &V);
-    glBindBuffer(GL_UNIFORM_BUFFER,0);
 
 
     glClearColor(0.81f, 0.81f, 0.8f, 1.0f);
@@ -146,6 +142,7 @@ void SimpleShapeApplication::frame() {
     auto R = glm::mat3(VM);
     auto N = glm::transpose(glm::inverse(R));
     light_.position_in_vs = VM*light_.position;
+    //std::cout<<glm::to_string(light_.position_in_vs)<<std::endl; // debil przecież to się milion razy wyświetli xd
 
     glBindBuffer(GL_UNIFORM_BUFFER, u_light_buffer_);
     glBufferSubData(GL_UNIFORM_BUFFER, 0, 4*sizeof(glm::vec4), &light_.position_in_vs[0]);
